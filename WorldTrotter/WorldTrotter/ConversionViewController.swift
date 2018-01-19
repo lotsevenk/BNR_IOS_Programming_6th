@@ -32,7 +32,7 @@ class ConversionViewController: UIViewController, UITextFieldDelegate {
         nf.maximumFractionDigits = 1
         return nf
     } ()
-    let numerics = CharacterSet(charactersIn: "0123456789.")
+    let numerics = CharacterSet(charactersIn: "0123456789.-")
     var nonNumerics = CharacterSet.alphanumerics
     @IBAction func fahrenheitFieldEditingChanged(_ textField: UITextField) {
         if let text = textField.text, let value = Double(text) {
@@ -68,16 +68,13 @@ class ConversionViewController: UIViewController, UITextFieldDelegate {
                    replacementString string: String) -> Bool {
         let existingTextHasDecimalSeperator = textField.text?.range(of: ".")
         let replacementTextHasDecimalSeperator = string.range(of: ".")
-        let repString = string as NSString
-        let stringRange = NSRange(0..<string.count)
-        let replacementTextHasNonNumeric = NSStringFromRange(repString.rangeOfCharacter(
-            from: nonNumerics, range: stringRange))
-//            from: CharacterSet.letters, range: stringRange))
+        var replacementCharacterSet = CharacterSet(charactersIn: string)
+        replacementCharacterSet.formIntersection(nonNumerics)
         if existingTextHasDecimalSeperator  != nil,
             replacementTextHasDecimalSeperator != nil {
             return false
         } else {
-            if replacementTextHasNonNumeric == "{0, 1}" {
+            if !replacementCharacterSet.isEmpty {
                 return false
             } else {
                 return true
